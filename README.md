@@ -1,6 +1,6 @@
 <div align="center">
   <a href="https://github.com/nexmoe/VidBee">
-    <img src="build/icon.png" alt="Logo" width="80" height="80">
+    <img src="apps/desktop/build/icon.png" alt="Logo" width="80" height="80">
   </a>
 
   <h3>VidBee</h3>
@@ -63,10 +63,50 @@ Automatically subscribe to RSS feeds and auto-download new videos in the backgro
 
 VidBee supports 1000+ video and audio platforms through yt-dlp. For the complete list of supported sites, visit [https://vidbee.org/supported-sites/](https://vidbee.org/supported-sites/)
 
+## 🧱 Web + API (Docker-ready)
+
+This monorepo now includes:
+
+- `packages/downloader-core`: Shared yt-dlp/ffmpeg download core
+- `apps/api`: Fastify API server with oRPC and SSE events
+- `apps/web`: TanStack Start web client using oRPC
+
+Run locally:
+
+```bash
+pnpm run start:web
+```
+
+This command starts `apps/api` and `apps/web` together.
+
+Run with Docker:
+
+```bash
+docker compose up -d --build
+```
+
+Stop services:
+
+```bash
+docker compose down
+```
+
+Optional env vars (via `.env`):
+
+```bash
+VIDBEE_API_PORT=3100
+VIDBEE_WEB_PORT=3000
+VITE_API_URL=http://localhost:3100
+```
+
 ## 🤝 Contributing
 
 You are welcome to join the open source community to build together. For more details, check out:
 
+- Monorepo apps:
+  - `apps/desktop`: VidBee desktop app (Electron)
+  - `apps/docs`: Documentation site (Next.js)
+  - `apps/extension`: Browser extension (WXT)
 - [Contributing Guide](./CONTRIBUTING.md)
 - [DeepWiki Documentation](https://deepwiki.com/nexmoe/VidBee)
 
