@@ -1,6 +1,6 @@
-<div align="center">
+<div align="left">
   <a href="https://github.com/nexmoe/VidBee">
-    <img src="build/icon.png" alt="Logo" width="80" height="80">
+    <img src="apps/desktop/build/icon.png" alt="Logo" width="80" height="80">
   </a>
 
   <h3>VidBee</h3>
@@ -32,7 +32,7 @@ VidBee is currently under active development, and feedback is welcome for any [i
 >
 > **Star Us**, You will receive all release notifications from GitHub without any delay ~
 
-<a href="https://next.ossinsight.io/widgets/official/compose-last-28-days-stats?repo_id=1081230042" target="_blank" style="display: block" align="center">
+<a href="https://next.ossinsight.io/widgets/official/compose-last-28-days-stats?repo_id=1081230042" target="_blank" style="display: block" align="left">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://next.ossinsight.io/widgets/official/compose-last-28-days-stats/thumbnail.png?repo_id=1081230042&image_size=auto&color_scheme=dark" width="655" height="auto">
     <img alt="Performance Stats of nexmoe/VidBee - Last 28 days" src="https://next.ossinsight.io/widgets/official/compose-last-28-days-stats/thumbnail.png?repo_id=1081230042&image_size=auto&color_scheme=light" width="655" height="auto">
@@ -63,10 +63,81 @@ Automatically subscribe to RSS feeds and auto-download new videos in the backgro
 
 VidBee supports 1000+ video and audio platforms through yt-dlp. For the complete list of supported sites, visit [https://vidbee.org/supported-sites/](https://vidbee.org/supported-sites/)
 
+## 🧱 Web + API (Docker-ready)
+
+This monorepo now includes:
+
+- `packages/downloader-core`: Shared yt-dlp/ffmpeg download core
+- `apps/api`: Fastify API server with oRPC and SSE events
+- `apps/web`: TanStack Start web client using oRPC
+
+Run locally:
+
+```bash
+pnpm run start:web
+```
+
+This command starts `apps/api` and `apps/web` together.
+
+Run with Docker:
+
+```bash
+docker compose up -d --build
+```
+
+Run with GitHub Container Registry images:
+
+```yaml
+services:
+  api:
+    image: ghcr.io/nexmoe/vidbee-api:latest
+    environment:
+      VIDBEE_API_HOST: 0.0.0.0
+      VIDBEE_API_PORT: 3100
+      VIDBEE_DOWNLOAD_DIR: /data/downloads
+      VIDBEE_HISTORY_STORE_PATH: /data/vidbee/vidbee.db
+    ports:
+      - "3100:3100"
+    volumes:
+      - vidbee-downloads:/data/downloads
+      - vidbee-data:/data/vidbee
+    restart: unless-stopped
+
+  web:
+    image: ghcr.io/nexmoe/vidbee-web:latest
+    depends_on:
+      - api
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+
+volumes:
+  vidbee-downloads:
+  vidbee-data:
+```
+
+Stop services:
+
+```bash
+docker compose down
+```
+
+Optional env vars (via `.env`):
+
+```bash
+VIDBEE_API_PORT=3100
+VIDBEE_WEB_PORT=3000
+VITE_API_URL=http://localhost:3100
+```
+
 ## 🤝 Contributing
 
 You are welcome to join the open source community to build together. For more details, check out:
 
+- Monorepo apps:
+  - `apps/desktop`: VidBee desktop app (Electron)
+  - `apps/docs`: Documentation site (Next.js)
+  - `apps/extension`: Browser extension (WXT)
 - [Contributing Guide](./CONTRIBUTING.md)
 - [DeepWiki Documentation](https://deepwiki.com/nexmoe/VidBee)
 
